@@ -1,1 +1,1 @@
-web: gunicorn hawa.wsgi --log-file -
+web: gunicorn Hawa.wsgi --log-file -
