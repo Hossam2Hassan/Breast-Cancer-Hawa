@@ -7,6 +7,8 @@ from django.utils.encoding import smart_str, DjangoUnicodeDecodeError,force_byte
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.forms import ValidationError
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from .utils import Util
 
 
@@ -116,24 +118,24 @@ class PasswordChangeSerializer(serializers.Serializer):
 
 
 
-# class LogoutSerializer(serializers.Serializer):
-#     refresh = serializers.CharField()
+class LogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField()
 
-#     error_message = {
-#         'bad_token': 'Token is expired or invalid'
-#     }
+    error_message = {
+        'bad_token': 'Token is expired or invalid'
+    }
 
-#     def validate(self, attrs):
-#         self.token = attrs['refresh']
-#         return attrs
+    def validate(self, attrs):
+        self.token = attrs['refresh']
+        return attrs
 
-#     def save(self, **kwargs):
+    def save(self, **kwargs):
 
-#         try:
-#             RefreshToken(self.token).blacklist()
+        try:
+            RefreshToken(self.token).blacklist()
 
-#         except TokenError:
-#            return Response( {'meassege':'bad_token'})
+        except TokenError:
+           return Response( {'meassege':'bad_token'})
 
 class PasswordforgetSerializer(serializers.Serializer):
   password = serializers.CharField(max_length=255, style={'input_type':'password'}, write_only=True)
@@ -186,24 +188,3 @@ class SendingSerializer(serializers.Serializer):
                 {'status' : False,
                 'message' :'Email incorrect'
             })
-    # email = serializers.EmailField(max_length=300,required=True)
-    # class Meta:
-    #     fields=['email']
-    # def validate(self, attr):
-    #     email = attr.get('email')
-    #     if User.objects.filter(email=email).exists():
-    #         user = User.objects.get(email=email)
-    #         uid = urlsafe_base64_encode(force_bytes(user.id))
-    #         token = PasswordResetTokenGenerator().make_token(user)
-    #         link = 'https://bchawa.herokuapp.com/auth/reset/'+uid+'/'+token
-    #         body = 'to reset your hawa account password click followwing link '+link
-    #         data = {
-    #             'email_subject':'Reset Your Password',
-    #             'email_body':body,
-    #             'to_email':user.email
-    #         }
-    #         print(link)
-    #         Util.send_email(data)
-    #         return attr
-    #     else :
-    #         raise ValidationError('error')

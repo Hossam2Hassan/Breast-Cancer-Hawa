@@ -1,5 +1,5 @@
 from rest_framework import generics, status, views, permissions
-from .serializers import (RegisterSerializer, UserSerializer,SendingSerializer,PasswordforgetSerializer, EmailVerificationSerializer, LoginSerializer, PasswordChangeSerializer)
+from .serializers import (RegisterSerializer, LogoutSerializer,UserSerializer,SendingSerializer,PasswordforgetSerializer, EmailVerificationSerializer, LoginSerializer, PasswordChangeSerializer)
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User
@@ -106,29 +106,29 @@ class PasswordChange(APIView):
 
 
 class LogoutAPIView(APIView):
-    # serializer_class = LogoutSerializer
+    serializer_class = LogoutSerializer
 
     permission_classes = (permissions.IsAuthenticated,)
-    def post(self, request, *args, **kwargs):
-        if self.request.data.get('all'):
-            token: OutstandingToken
-            for token in OutstandingToken.objects.filter(user=request.user):
-                _, _ = BlacklistedToken.objects.get_or_create(token=token)
-                token.access_token.delete()
+    # def post(self, request, *args, **kwargs):
+    #     if self.request.data.get('all'):
+    #         token: OutstandingToken
+    #         for token in OutstandingToken.objects.filter(user=request.user):
+    #             _, _ = BlacklistedToken.objects.get_or_create(token=token)
+    #             token.access_token.delete()
                 
-            return Response({"status": "OK, goodbye, all refresh tokens blacklisted"})
-        refresh_token = self.request.data.get('refresh_token')
-        token = RefreshToken(token=refresh_token)
-        token.blacklist()
+    #         return Response({"status": "OK, goodbye, all refresh tokens blacklisted"})
+    #     refresh_token = self.request.data.get('refresh_token')
+    #     token = RefreshToken(token=refresh_token)
+    #     token.blacklist()
         
-        return Response({"status": "OK, goodbye"})
-    # def post(self, request):
+    #     return Response({"status": "OK, goodbye"})
+    def post(self, request):
 
-    #     serializer = self.serializer_class(data=request.data)
-    #     serializer.is_valid(raise_exception=True)
-    #     serializer.save()
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
 
-    #     return Response({'status':True,'message':'log out successfully'},status=status.HTTP_204_NO_CONTENT)
+        return Response({'status':True,'message':'log out successfully'},status=status.HTTP_204_NO_CONTENT)
 
 # profile of user GET to show user info and PUT to mdifay user info
 class GetUpdateProfile(APIView):

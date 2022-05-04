@@ -3,7 +3,7 @@ from authentication.models import User
 # Create your models here.
 
 class Self_checkModel(models.Model):
-    question=models.CharField(max_length=50)
+    question=models.CharField(max_length=500)
     def __str__(self):
         return self.question
 
