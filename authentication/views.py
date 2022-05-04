@@ -4,15 +4,14 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User
 from django.contrib.sites.shortcuts import get_current_site
-from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.urls import reverse
+from rest_framework.permissions import AllowAny, IsAuthenticated
 import jwt
 from django.conf import settings
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from .renderers import UserRenderer
 from django.contrib.sites.shortcuts import get_current_site
-from django.urls import reverse
 from .utils import Util
 from django.http import HttpResponsePermanentRedirect
 from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
@@ -162,15 +161,17 @@ class GetUpdateProfile(APIView):
 
 
 #request email address response send link to user email's 
-class SendingEmail(APIView):
+class SendingEmail(generics.GenericAPIView):
     authentication_classes = ()
     permission_classes = (AllowAny,)
+    serializer_class = SendingSerializer
     def post(self,request,format=None):
-        serializer = SendingSerializer(data=request.data)
+        serializer = self.get_serializer(data =request.data)
         if serializer.is_valid(raise_exception=True):
-            return Response({'status': True,'messege' : 'you have link in your email'},status=status.HTTP_200_OK)
-        return Response({'status' : False,'messege': 'email is not correct'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'status': True,'messege' : 'check your email'},status=status.HTTP_200_OK)
+        return Response({'status' : False,'messege': 'email'}, status=status.HTTP_400_BAD_REQUEST)
 
+    
 # request uid - token fron url and password , repassword from user
 class PasswordforgetView(APIView):
     def post(self, request, uid, token, format=None):

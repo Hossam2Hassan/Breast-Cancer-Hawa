@@ -4,6 +4,7 @@ from django.contrib import auth
 from rest_framework.exceptions import AuthenticationFailed
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import smart_str, DjangoUnicodeDecodeError,force_bytes
+from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.forms import ValidationError
 from .utils import Util
@@ -38,7 +39,6 @@ class RegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({'status' : False,'message' : 'phone is already exist', })
 
         user.set_password(self.validated_data['password'])
-        user.is_verified = True
         user.save()
         return user
 
@@ -161,24 +161,49 @@ class PasswordforgetSerializer(serializers.Serializer):
         raise serializers.ValidationError('Token is not Valid or Expired')
 
 class SendingSerializer(serializers.Serializer):
-    email = serializers.EmailField(max_length=300,required=True)
+    email = serializers.EmailField(max_length=300)
     class Meta:
         fields=['email']
-    def validate(self, attr):
-        email = attr.get('email')
+    def validate(self, attrs):
+        email = attrs.get('email')
         if User.objects.filter(email=email).exists():
             user = User.objects.get(email=email)
             uid = urlsafe_base64_encode(force_bytes(user.id))
             token = PasswordResetTokenGenerator().make_token(user)
-            link = 'http://127.0.0.1:8000/auth/reset/'+uid+'/'+token
-            body = 'to reset your hawa account password click followwing link '+link
+            request = self.context['request']
+            site = get_current_site(request).domain
+            link = 'http://'+site+'/auth/reset/'+ uid + '/'+token+ '/'
+            body = 'Hi Desr,\nClick Following Link to Reset Your Password Please.\n'+link
             data = {
-                'email_subject':'Reset Your Password',
+                'email_subject':'Reset Password',
                 'email_body':body,
                 'to_email':user.email
             }
-            print(link)
             Util.send_email(data)
-            return attr
+            return attrs
         else :
-            raise ValidationError('error')
+            raise serializers.ValidationError(
+                {'status' : False,
+                'message' :'Email incorrect'
+            })
+    # email = serializers.EmailField(max_length=300,required=True)
+    # class Meta:
+    #     fields=['email']
+    # def validate(self, attr):
+    #     email = attr.get('email')
+    #     if User.objects.filter(email=email).exists():
+    #         user = User.objects.get(email=email)
+    #         uid = urlsafe_base64_encode(force_bytes(user.id))
+    #         token = PasswordResetTokenGenerator().make_token(user)
+    #         link = 'https://bchawa.herokuapp.com/auth/reset/'+uid+'/'+token
+    #         body = 'to reset your hawa account password click followwing link '+link
+    #         data = {
+    #             'email_subject':'Reset Your Password',
+    #             'email_body':body,
+    #             'to_email':user.email
+    #         }
+    #         print(link)
+    #         Util.send_email(data)
+    #         return attr
+    #     else :
+    #         raise ValidationError('error')
