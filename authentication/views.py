@@ -7,6 +7,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
 from rest_framework.permissions import AllowAny, IsAuthenticated
 import jwt
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.conf import settings
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -15,15 +16,8 @@ from django.contrib.sites.shortcuts import get_current_site
 from .utils import Util
 from django.http import HttpResponsePermanentRedirect
 from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
-import os 
+
 from rest_framework.views import APIView
-
-
-
-
-class CustomRedirect(HttpResponsePermanentRedirect):
-
-    allowed_schemes = [os.environ.get('APP_SCHEME'), 'http', 'https']
 
 
 class RegisterView(generics.GenericAPIView):
@@ -39,6 +33,7 @@ class RegisterView(generics.GenericAPIView):
         user_data = serializer.data
         user = User.objects.get(email=user_data['email'])
         token = RefreshToken.for_user(user).access_token
+        # token = PasswordResetTokenGenerator().make_token(user)
         current_site = get_current_site(request).domain
         relativeLink = reverse('email-verify')
         absurl = 'http://'+current_site+relativeLink+"?token="+str(token)
@@ -46,7 +41,7 @@ class RegisterView(generics.GenericAPIView):
             ' Use the link below to verify your email \n' + absurl
         print(str(token))
         data = {'email_body': email_body, 'to_email': user.email,
-                'email_subject': 'Verify your email'}
+                'email_subject': 'Verify email'}
 
         Util.send_email(data)
         return Response({'status':True ,
@@ -64,7 +59,8 @@ class VerifyEmail(views.APIView):
     def get(self, request):
         token = request.GET.get('token')
         try:
-            payload = jwt.decode(token, settings.SECRET_KEY)
+            payload = jwt.decode(jwt=token, key=settings.SECRET_KEY, algorithms=['HS256'])
+            # payload = jwt.decode(token, settings.SECRET_KEY)
             user = User.objects.get(id=payload['user_id'])
             if not user.is_verified:
                 user.is_verified = True
