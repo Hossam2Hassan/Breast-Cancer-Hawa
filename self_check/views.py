@@ -26,9 +26,14 @@ def questionview(request):
 
 
     elif request.method=='POST':
-        question = models.Self_checkModel.objects.get(pk=request.data['self_check'])
-        c= models.CheckingModel.objects.create(user=request.user , self_check=question, answer=request.data['answer'])
-        return Response({'status':True, 'data':'data' },status=status.HTTP_200_OK)
+        try:
+            question = models.Self_checkModel.objects.get(pk=request.data['self_check'])
+            c= models.CheckingModel.objects.create(user=request.user , self_check=question, answer=request.data['answer'])
+            return Response({'status':True, 'data':'data' },status=status.HTTP_200_OK)
+        except:
+            return Response({'status':True,'Error': 'Invalid data'}, status=status.HTTP_400_BAD_REQUEST)
+    
+
 
 # request token response user self check question : answer 
 @permission_classes(IsAuthenticated, )
