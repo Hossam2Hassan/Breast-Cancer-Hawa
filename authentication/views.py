@@ -77,7 +77,7 @@ class LoginAPIView(generics.GenericAPIView):
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({'status':True,"user_data":serializer.data}, status=status.HTTP_200_OK)
 
 
 
@@ -90,10 +90,10 @@ class PasswordChange(APIView):
 
         if serializer.is_valid():
             user = request.user
-            old_password=serializer.data['old_password']
-            new_password = serializer.data['new_password']
-            new_password_conf = serializer.data['new_password_conf']
-            if  not user.check_password(old_password):
+            oldpassword=request.data['oldpassword']
+            new_password = request.data['new_password']
+            new_password_conf = request.data['new_password_conf']
+            if  not user.check_password(oldpassword):
                 return Response({'status':False,'messege':'old_password is not correct'})
             if new_password!=new_password_conf:
                 return Response({'status':False,'messege':'password is not mached'})

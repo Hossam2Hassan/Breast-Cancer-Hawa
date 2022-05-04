@@ -56,7 +56,7 @@ class Calender(generics.GenericAPIView):
             b = {'date':checkdate}
             checkList['dates'].append(b)
 
-        return Response({'status':True,'check_dates':checkList},status=status.HTTP_200_OK)
+        return Response({'status':True,'period date':date,'check_dates':checkList},status=status.HTTP_200_OK)
 
     def get(self,request):
         

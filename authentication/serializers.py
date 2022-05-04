@@ -17,7 +17,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     birthdate=serializers.DateField(required=True)
     first_name = serializers.CharField(max_length=100,required=True)
     last_name = serializers.CharField(max_length=100,required=True)
-    phone=serializers.CharField(max_length=100,required=False)
+    phone=serializers.CharField(max_length=100,required=True)
     default_error_messages = {'status' : False,'username': 'The username should only contain alphanumeric characters'}
 
     class Meta:
@@ -111,7 +111,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class PasswordChangeSerializer(serializers.Serializer): 
-    old_password = serializers.CharField(max_length=68, min_length=6, write_only=True)
+    oldpassword = serializers.CharField(max_length=68, min_length=6, write_only=True)
     new_password = serializers.CharField(max_length=68, min_length=6, write_only=True)
     new_password_conf = serializers.CharField(max_length=68, min_length=6, write_only=True)
 
