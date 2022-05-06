@@ -88,11 +88,11 @@ class LoginSerializer(serializers.ModelSerializer):
                 detail='Please continue your login using ' + filtered_user_by_email[0].auth_provider)
 
         if not user:
-            raise AuthenticationFailed('Invalid Email or password, try again')
+            raise AuthenticationFailed({'status':False,"messege":'Invalid Email or password, try again'})
         if not user.is_active:
             raise AuthenticationFailed('Account not active, contact admin')
         if not user.is_verified:
-            raise AuthenticationFailed('Email is not verified')
+            raise AuthenticationFailed({'status':False,"messege":'Email is not verified'})
 
         return{
             'email': user.email,

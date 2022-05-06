@@ -75,12 +75,11 @@ class LoginAPIView(generics.GenericAPIView):
     serializer_class = LoginSerializer
 
     def post(self, request):
-        try:
-            serializer = self.serializer_class(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            return Response({'status':True,"user_data":serializer.data}, status=status.HTTP_200_OK)
-        except:
-             return Response({'status':False,"Error_Messege":"Error Messede"}, status=status.HTTP_200_OK)
+        
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return Response({'status':True,"user_data":serializer.data}, status=status.HTTP_200_OK)
+
 
 
 
