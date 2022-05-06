@@ -15,17 +15,16 @@ from datetime import timedelta,datetime
 @api_view(['GET','POST'])
 def questionview(request):
     if request.method=='GET':
-        if request.method=='GET':
-            user=request.user
-        
-            if models.User.objects.filter(email=user.email).exists() :
-                data = {'question':[]}
-                questions=models.Self_checkModel.objects.all()
-                serializer=Self_checkSerializer(questions,many=True)
-                for item in serializer.data:
-                    item['answer']= 'Yes / No'
-                    data['question'].append(item)
-                return Response({'status':True,'data':data},status=status.HTTP_200_OK)
+        user=request.user
+    
+        if models.User.objects.filter(email=user.email).exists() :
+            data = {'question':[]}
+            questions=models.Self_checkModel.objects.all()
+            serializer=Self_checkSerializer(questions,many=True)
+            for item in serializer.data:
+                item['answer']= 'Yes / No'
+                data['question'].append(item)
+            return Response({'status':True,'data':data},status=status.HTTP_200_OK)
 
 
 
@@ -33,9 +32,9 @@ def questionview(request):
         try:
             question = models.Self_checkModel.objects.get(pk=request.data['self_check'])
             c= models.CheckingModel.objects.create(user=request.user , self_check=question, answer=request.data['answer'])
-            return Response({'status':True, 'data':'data' },status=status.HTTP_200_OK)
+            return Response({'status':True, 'data':'data saved' },status=status.HTTP_200_OK)
         except:
-            return Response({'status':True,'Error': 'Invalid data'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'status':False,'Error': 'Invalid data'}, status=status.HTTP_400_BAD_REQUEST)
     
 
 
