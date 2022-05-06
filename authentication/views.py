@@ -78,7 +78,7 @@ class LoginAPIView(generics.GenericAPIView):
         
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        return Response({'status':True,"user_data":serializer.data}, status=status.HTTP_200_OK)
+        return Response({'status':True,"messege":"Login is Successfully","user_data":serializer.data}, status=status.HTTP_200_OK)
 
 
 
