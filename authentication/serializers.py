@@ -107,7 +107,7 @@ class LoginSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['first_name','last_name','email','birthdate','phone']
+        fields = ['first_name','last_name','email','birthdate','phone','age']
 
 
 class PasswordChangeSerializer(serializers.Serializer): 

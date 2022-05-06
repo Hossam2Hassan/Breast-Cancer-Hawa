@@ -1,7 +1,8 @@
+from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import BaseUserManager,AbstractBaseUser,PermissionsMixin
 from rest_framework_simplejwt.tokens import RefreshToken
-import uuid
+
 
 # Create your models here.
 class UserManager(BaseUserManager):
@@ -19,6 +20,7 @@ class UserManager(BaseUserManager):
             raise TypeError('Password should not be none')
         user = self.create_user(email, password)
         user.is_superuser = True
+        user.is_verified=True
         user.is_staff = True
         user.save()
         return user
@@ -33,6 +35,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=100, unique=True, db_index=True,blank=True,null=True)
     email = models.EmailField(max_length=200, unique=True, db_index=True)
     birthdate=models.DateField(null=True)
+    age=models.CharField(max_length=2)
     is_verified = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -57,4 +60,8 @@ class User(AbstractBaseUser, PermissionsMixin):
             'refresh': str(refresh),
             'access': str(refresh.access_token)
         }
+    def age (self):
+        age=datetime.now().year -int(self.birthdate.year)
+        return age
+
 

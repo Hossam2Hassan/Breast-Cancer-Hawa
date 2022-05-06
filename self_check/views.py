@@ -15,13 +15,17 @@ from datetime import timedelta,datetime
 @api_view(['GET','POST'])
 def questionview(request):
     if request.method=='GET':
-        data = {'question':[]}
-        questions=models.Self_checkModel.objects.all()
-        serializer=Self_checkSerializer(questions,many=True)
-        for item in serializer.data:
-            item['answer']= 'Yes / No'
-            data['question'].append(item)
-        return Response({'status':True,'data':data},status=status.HTTP_200_OK)
+        if request.method=='GET':
+            user=request.user
+        
+            if models.User.objects.filter(email=user.email).exists() :
+                data = {'question':[]}
+                questions=models.Self_checkModel.objects.all()
+                serializer=Self_checkSerializer(questions,many=True)
+                for item in serializer.data:
+                    item['answer']= 'Yes / No'
+                    data['question'].append(item)
+                return Response({'status':True,'data':data},status=status.HTTP_200_OK)
 
 
 

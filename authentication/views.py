@@ -75,6 +75,7 @@ class LoginAPIView(generics.GenericAPIView):
     serializer_class = LoginSerializer
 
     def post(self, request):
+
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         return Response({'status':True,"user_data":serializer.data}, status=status.HTTP_200_OK)
@@ -147,7 +148,7 @@ class GetUpdateProfile(APIView):
             return Response({ 'status' : False ,'message' :'Error data '},status=status.HTTP_404_NOT_FOUND)
     def get(self, request, format=None):
         try:
-            user = self.request.user   
+            user = self.request.user
             print(user)
         except User.DoesNotExist:
             return Response({ 'status' : False ,'message' :'Token invalid'},status=status.HTTP_404_NOT_FOUND)
@@ -165,7 +166,7 @@ class SendingEmail(generics.GenericAPIView):
         serializer = self.get_serializer(data =request.data)
         if serializer.is_valid(raise_exception=True):
             return Response({'status': True,'messege' : 'check your email'},status=status.HTTP_200_OK)
-        return Response({'status' : False,'messege': 'email'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'status' : False,'messege': 'email'}, status=status.HTTP_401_UNAUTHORIZED)
 
     
 # request uid - token fron url and password , repassword from user
