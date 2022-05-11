@@ -28,9 +28,14 @@ class PredictionkView(generics.GenericAPIView):
             print(values)
             print(request.user)
             y_pred = loaded_model.predict(values)
-            print(y_pred[0])
             serializer.save(user=self.request.user , result=y_pred[0])
-            return Response({'status':True,'data':' Result is {}'.format(y_pred)})
+            print(y_pred[0])
+            if y_pred[0] =='B' :
+                y_pred='حميد'
+                return Response({'status':True,'data':' نتيجه التحليل (ورم  {})'.format(y_pred)})
+            elif y_pred[0] =='M':
+                y_pred='خبيث'
+                return Response({'status':True,'data':' نتيجه التحليل (ورم  {})'.format(y_pred)})
         except ValueError as e:
             return Response(e.args[0], status=status.HTTP_400_BAD_REQUEST)
 

@@ -59,12 +59,15 @@ class Calender(generics.GenericAPIView):
         serializer.save(self_check=request.user)
         date = datetime.strptime(request.data.get('period'),"%Y-%m-%d").date()
         checkList={"dates":[]}
-        for i in range(7,11):
+        for i in range(31):
             checkdate = date + timedelta(days=i)
-            b = {'date':checkdate}
+            is_check=False
+            if i >=7 and i <= 10 :
+                is_check=True
+            b = {"id":checkdate.day,"title":checkdate.day,'is_check':is_check}
             checkList['dates'].append(b)
 
-        return Response({'status':True,'period date':date,'check_dates':checkList},status=status.HTTP_200_OK)
+        return Response({'status':True,'period':date.day,'date':checkList},status=status.HTTP_200_OK)
 
     def get(self,request):
         
@@ -72,11 +75,15 @@ class Calender(generics.GenericAPIView):
             lastdate=models.CalendarModel.objects.filter(self_check=self.request.user).last()
             print(lastdate.period)
             checkList={"dates":[]}
-            for i in range(7,11):
+            for i in range(31):
+                perioddate=lastdate.period
                 checkdate = lastdate.period + timedelta(days=i)
-                b = {'date':checkdate}
+                is_check=False
+                if i >=7 and i <= 10 :
+                    is_check=True
+                b = {"id":checkdate.day,"title":checkdate.day,'is_check':is_check}
                 checkList['dates'].append(b)
-            return Response({'status':True,'period':lastdate.period,'data':checkList},status=status.HTTP_200_OK)
+            return Response({'status':True,'period':perioddate.day,'data':checkList},status=status.HTTP_200_OK)
         except:
             return Response({'status':False,'meassage':'please enter period date '},status=status.HTTP_400_BAD_REQUEST)
         

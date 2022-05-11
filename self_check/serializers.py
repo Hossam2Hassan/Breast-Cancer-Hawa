@@ -18,7 +18,7 @@ class AnswerSerializer(serializers.ModelSerializer):
 
 class CalenderSerializer(serializers.ModelSerializer):
     period=serializers.CharField(required=True)
-    self_check=serializers.CharField(required=False,)
+    self_check=serializers.CharField(required=False)
     class Meta:
         model=models.CalendarModel
         fields=['period','self_check']

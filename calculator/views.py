@@ -1,11 +1,11 @@
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import  IsAuthenticated
 from .serializers import RiskSerializer
 from .import gail
 import numpy as np
-from django.http import JsonResponse
+
 
 from .RiskAssessment import BasicRiskAssessment as assessment
 
@@ -22,7 +22,7 @@ class RiskView(generics.GenericAPIView):
             if request.data['ihyp'] == 0:
                 rhyp = np.float64(0.93)
             elif request.data['ihyp'] == 1:
-                rhyp = np.float(1.82)   
+                rhyp = np.float64(1.82)   
         model = gail.GailRiskCalculator()
         model.Initialize()
         fiveyearABS= model.CalculateAbsoluteRisk(

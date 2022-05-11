@@ -15,4 +15,4 @@ class CheckingModel(models.Model):
 
 class CalendarModel(models.Model):
     period=models.DateField()
-    self_check=models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    self_check=models.ForeignKey(User, on_delete=models.CASCADE, null=True,blank=True)
