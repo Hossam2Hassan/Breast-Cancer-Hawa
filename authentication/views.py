@@ -1,3 +1,4 @@
+from django.shortcuts import render
 from rest_framework import generics, status, views, permissions
 from .serializers import (RegisterSerializer, LogoutSerializer,UserSerializer,SendingSerializer,PasswordforgetSerializer, EmailVerificationSerializer, LoginSerializer, PasswordChangeSerializer)
 from rest_framework.response import Response
@@ -65,11 +66,16 @@ class VerifyEmail(views.APIView):
             if not user.is_verified:
                 user.is_verified = True
                 user.save()
-            return Response({'email': 'Successfully activated'}, status=status.HTTP_200_OK)
+            # return Response({'email': 'Successfully activated'}, status=status.HTTP_200_OK)
+                return render (request,'activation_success.html')
+            else:
+                return render (request,'activated.html')
         except jwt.ExpiredSignatureError as identifier:
-            return Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
+            # return Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
+            return render (request,'activation_expired.html')
         except jwt.exceptions.DecodeError as identifier:
-            return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+            # return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+            return render (request,'activation_invalid.html')
 
 class LoginAPIView(generics.GenericAPIView):
     serializer_class = LoginSerializer
@@ -176,4 +182,3 @@ class PasswordforgetView(APIView):
         serializer = PasswordforgetSerializer(data=request.data, context={'uid':uid, 'token':token})
         serializer.is_valid(raise_exception=True)
         return Response({'msg':'your Password Reset Successfully'}, status=status.HTTP_200_OK)
-    

@@ -42,7 +42,7 @@ urlpatterns = [
     path('predict/', include('prediction.urls')),
     path('risk_calculator/', include('calculator.urls')),
 
-    path('swagger', schema_view.with_ui('swagger',
+    path('swagger/', schema_view.with_ui('swagger',
                                  cache_timeout=0), name='schema-swagger-ui'),
 
     path('api/', schema_view.without_ui(cache_timeout=0),
