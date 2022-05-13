@@ -188,3 +188,5 @@ class SendingSerializer(serializers.Serializer):
                 {'status' : False,
                 'message' :'Email incorrect'
             })
+
+    

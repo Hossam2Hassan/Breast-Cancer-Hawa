@@ -11,6 +11,6 @@ from .models import User
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ['email', 'auth_provider', 'created_at','first_name','is_staff']
+    list_display = ['email', 'auth_provider', 'created_at','first_name','is_staff',"is_verified"]
     ordaring=('email',)
     search_fields=('first_name','email')

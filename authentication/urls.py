@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import RegisterView, LogoutAPIView,SendingEmail, PasswordforgetView,GetUpdateProfile,PasswordChange, VerifyEmail, LoginAPIView
+from .views import RegisterView, LogoutAPIView,SendingEmail, PasswordforgetView,GetUpdateProfile,PasswordChange, VerifyEmail, LoginAPIView,DeleteUserViews
 from rest_framework_simplejwt.views import (TokenRefreshView,)
 from django.contrib.auth import views as auth_views
 
@@ -18,5 +18,7 @@ urlpatterns = [
      path('reset_password_complete/', auth_views.PasswordResetCompleteView.as_view(template_name='password_reset_complete.html'),name= 'password_reset_complete'),
 
      path('profile/' ,GetUpdateProfile.as_view(), name = 'profile'),
+     path('delete/' ,DeleteUserViews.as_view(), name = 'delete'),
+
      
 ]

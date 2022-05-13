@@ -22,7 +22,7 @@ from rest_framework.views import APIView
 
 
 class RegisterView(generics.GenericAPIView):
-    authentication_classes={AllowAny,}
+    authentication_classes=()
     serializer_class = RegisterSerializer
     renderer_classes = (UserRenderer,)
 
@@ -79,7 +79,7 @@ class VerifyEmail(views.APIView):
             return render (request,'activation_invalid.html')
 
 class LoginAPIView(generics.GenericAPIView):
-    authentication_classes={AllowAny,}
+    authentication_classes={}
     serializer_class = LoginSerializer
 
     def post(self, request):
@@ -184,3 +184,16 @@ class PasswordforgetView(APIView):
         serializer = PasswordforgetSerializer(data=request.data, context={'uid':uid, 'token':token})
         serializer.is_valid(raise_exception=True)
         return Response({'msg':'your Password Reset Successfully'}, status=status.HTTP_200_OK)
+
+class DeleteUserViews(APIView):
+    
+    def post(self, request):
+        user=request.user
+        try:
+            if User.objects.filter(email=user.email).exists():
+                user = User.objects.get(email=user.email)
+                print(request.user)
+                user.delete()
+            return Response({"status":True,"Messege":"account deleted"})
+        except:
+            return Response({"status":False,"Messege":"account not found"})
