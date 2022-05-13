@@ -24,15 +24,19 @@ from rest_framework.views import APIView
 class RegisterView(generics.GenericAPIView):
     authentication_classes=()
     serializer_class = RegisterSerializer
-    renderer_classes = (UserRenderer,)
+    # renderer_classes = (UserRenderer,)
 
     def post(self, request):
         user = request.data
         serializer = self.serializer_class(data=user)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+        if serializer.is_valid():
+            serializer.save()
         user_data = serializer.data
         user = User.objects.get(email=user_data['email'])
+        if User.objects.filter(email=user_data['email']).exists():
+            return Response({'status' : False,'message' : 'هذا البريد موجود بالفعل', })
+        if User.objects.filter(phone=user_data['phone']).exists():
+            return Response({'status' : False,'message' : 'رقم الهاتف هذا مسجل بالفعل', })
         token = RefreshToken.for_user(user).access_token
         # token = PasswordResetTokenGenerator().make_token(user)
         current_site = get_current_site(request).domain
@@ -51,7 +55,7 @@ class RegisterView(generics.GenericAPIView):
 
 
 class VerifyEmail(views.APIView):
-    authentication_classes={AllowAny,}
+    authentication_classes=()
     serializer_class = EmailVerificationSerializer
 
     token_param_config = openapi.Parameter(
