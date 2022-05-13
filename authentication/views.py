@@ -27,16 +27,19 @@ class RegisterView(generics.GenericAPIView):
     # renderer_classes = (UserRenderer,)
 
     def post(self, request):
-        user = request.data
-        serializer = self.serializer_class(data=user)
-        if serializer.is_valid():
-            serializer.save()
+        user0 = request.data
+        serializer = self.serializer_class(data=user0)
+        serializer.is_valid()
+        
+        if User.objects.filter(email=user0['email']).exists():
+            return Response({'status' : False,'message' : 'email is already exist', })
+
+        
+        if User.objects.filter(phone=user0['phone']).exists():
+            return Response({'status' : False,'message' : 'phone is already exist', })
+        serializer.save()
         user_data = serializer.data
-        user = User.objects.get(email=user_data['email'])
-        if User.objects.filter(email=user_data['email']).exists():
-            return Response({'status' : False,'message' : 'هذا البريد موجود بالفعل', })
-        if User.objects.filter(phone=user_data['phone']).exists():
-            return Response({'status' : False,'message' : 'رقم الهاتف هذا مسجل بالفعل', })
+        user = User.objects.get(email=user0['email'])
         token = RefreshToken.for_user(user).access_token
         # token = PasswordResetTokenGenerator().make_token(user)
         current_site = get_current_site(request).domain
@@ -55,7 +58,7 @@ class RegisterView(generics.GenericAPIView):
 
 
 class VerifyEmail(views.APIView):
-    authentication_classes=()
+    authentication_classes={AllowAny,}
     serializer_class = EmailVerificationSerializer
 
     token_param_config = openapi.Parameter(

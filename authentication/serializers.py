@@ -18,31 +18,26 @@ class RegisterSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(max_length=100,required=True)
     last_name = serializers.CharField(max_length=100,required=True)
     phone=serializers.CharField(max_length=100,required=True)
-
+    default_error_messages = {'status' : False,'username': 'The username should only contain alphanumeric characters'}
 
     class Meta:
         model = User
         fields = ['email', 'password','first_name','last_name','birthdate','phone']
-    # def save(self, **kwargs):
-    #     user= User(
-    #         first_name=self.validated_data['first_name'],
-    #         last_name=self.validated_data['last_name'],
-    #         birthdate=self.validated_data['birthdate'],
-    #         email=self.validated_data['email'],
-    #         phone=self.validated_data['phone']
-    #     )
+    def save(self, **kwargs):
+        user= User(
+            first_name=self.validated_data['first_name'],
+            last_name=self.validated_data['last_name'],
+            birthdate=self.validated_data['birthdate'],
+            email=self.validated_data['email'],
+            phone=self.validated_data['phone']
+        )
         
         
-        # if User.objects.filter(email=self.validated_data['email']).exists():
-        #     raise serializers.ValidationError({'status' : False,'message' : 'email is already exist', })
+        
 
-        
-        # if User.objects.filter(phone=self.validated_data['phone']).exists():
-        #     raise serializers.ValidationError({'status' : False,'message' : 'phone is already exist', })
-
-        # user.set_password(self.validated_data['password'])
-        # user.save()
-        # return user
+        user.set_password(self.validated_data['password'])
+        user.save()
+        return user
 
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
