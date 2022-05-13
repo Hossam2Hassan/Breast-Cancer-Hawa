@@ -22,7 +22,7 @@ from rest_framework.views import APIView
 
 
 class RegisterView(generics.GenericAPIView):
-
+    authentication_classes={AllowAny,}
     serializer_class = RegisterSerializer
     renderer_classes = (UserRenderer,)
 
@@ -51,6 +51,7 @@ class RegisterView(generics.GenericAPIView):
 
 
 class VerifyEmail(views.APIView):
+    authentication_classes={AllowAny,}
     serializer_class = EmailVerificationSerializer
 
     token_param_config = openapi.Parameter(
@@ -78,6 +79,7 @@ class VerifyEmail(views.APIView):
             return render (request,'activation_invalid.html')
 
 class LoginAPIView(generics.GenericAPIView):
+    authentication_classes={AllowAny,}
     serializer_class = LoginSerializer
 
     def post(self, request):
