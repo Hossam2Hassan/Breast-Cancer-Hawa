@@ -55,10 +55,13 @@ class LoginSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(max_length=255, min_length=3)
     password = serializers.CharField(max_length=68, min_length=6, write_only=True)
     phone = serializers.CharField(max_length=11, min_length=3, read_only=True)
-    first_name = serializers.CharField(max_length=255, min_length=3, read_only=True)
+    first_name =  serializers.SerializerMethodField()
 
     tokens = serializers.SerializerMethodField()
 
+    def get_first_name(self, obj):
+        user = User.objects.get(email=obj['email'])
+        return user.first_name
     def get_tokens(self, obj):
         user = User.objects.get(email=obj['email'])
 
@@ -71,30 +74,30 @@ class LoginSerializer(serializers.ModelSerializer):
         model = User
         fields = ['first_name','email', 'password','phone', 'tokens']
 
-    def validate(self, attrs):
-        email = attrs.get('email', '')
-        password = attrs.get('password', '')
+    # def validate(self, attrs):
+    #     # email = attrs.get('email', '')
+    #     # password = attrs.get('password', '')
        
-        filtered_user_by_email = User.objects.filter(email=email)
-        user = auth.authenticate(email=email , password=password)
+    #     # filtered_user_by_email = User.objects.filter(email=email)
+    #     # user = auth.authenticate(email=email , password=password)
 
-        if filtered_user_by_email.exists() and filtered_user_by_email[0].auth_provider != 'email':
-            raise AuthenticationFailed(
-                detail='Please continue your login using ' + filtered_user_by_email[0].auth_provider)
+    #     # if filtered_user_by_email.exists() and filtered_user_by_email[0].auth_provider != 'email':
+    #     #     raise AuthenticationFailed(
+    #     #         detail='Please continue your login using ' + filtered_user_by_email[0].auth_provider)
 
-        if not user:
-            raise AuthenticationFailed({'status':False,"messege":'Invalid Email or password, Try again'})
-        if not user.is_active:
-            raise AuthenticationFailed({'status':False,"messege":'Account not active, contact admin'})
-        if not user.is_verified:
-            raise AuthenticationFailed({'status':False,"messege":'Email is not Verified'})
+    #     # if not user:
+    #     #     raise AuthenticationFailed({'status':"false","messege":'Invalid Email or password, Try again'})
+    #     # if not user.is_active:
+    #     #     raise AuthenticationFailed({'status':"false","messege":'Account not active, contact admin'})
+    #     # if not user.is_verified:
+    #     #     raise AuthenticationFailed({'status':"false","messege":'Email is not Verified'})
 
-        return{
-            'email': user.email,
-            'first_name':user.first_name,
-            'phone':user.phone,
-            'tokens': user.tokens
-        }
+    #     return{
+    #         'email': user.email,
+    #         'first_name':user.first_name,
+    #         'phone':user.phone,
+    #         'tokens': user.tokens
+    #     }
 
         # return super().validate(attrs)
 

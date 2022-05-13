@@ -84,16 +84,33 @@ class VerifyEmail(views.APIView):
         except jwt.exceptions.DecodeError as identifier:
             # return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
             return render (request,'activation_invalid.html')
-
+from django.contrib import auth
 class LoginAPIView(generics.GenericAPIView):
     authentication_classes={}
     serializer_class = LoginSerializer
 
     def post(self, request):
-        
+        user=request.data
         serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        return Response({'status':True,"messege":"مرحباً..!","user_data":serializer.data}, status=status.HTTP_200_OK)
+        if serializer.is_valid():
+       
+            email = user.get('email')
+            password = user.get('password')
+            
+            filtered_user_by_email = User.objects.filter(email=email)
+            user = auth.authenticate(email=email , password=password)
+            if not user:
+                return Response({'status':False,"messege":'خطأ في البريد او الرقم السري',"user_data":{}}, status=status.HTTP_200_OK)
+            if not user.is_active:
+                return Response({'status':False,"messege":'الحساب متوقف من قبل الادمن',"user_data":{}}, status=status.HTTP_200_OK)
+            if not user.is_verified:
+                return Response({'status':False,"messege":'الحساب غير مفعل',"user_data":{}}, status=status.HTTP_200_OK)
+            if filtered_user_by_email.exists() and filtered_user_by_email[0].auth_provider != 'email':
+               pass
+            return Response({'status':True,"messege":"مرحباً..!","user_data":serializer.data}, status=status.HTTP_200_OK)
+        return Response({'status':False,"messege":'..!خطأ في البريد او الرقم السري',"user_data":{}}, status=status.HTTP_200_OK)
+
+        
 
 
 
@@ -159,7 +176,7 @@ class GetUpdateProfile(APIView):
         userSerializer = UserSerializer(user,data=request.data)
         if userSerializer.is_valid() :
             userSerializer.save()
-            return Response({'status': True,'message' :'Updated data Successfuly','data':[ userSerializer.data]} ,status=status.HTTP_202_ACCEPTED)
+            return Response({'status': True,'message' :'تم تعديل...!','data':[ userSerializer.data]} ,status=status.HTTP_202_ACCEPTED)
         else:
             return Response({ 'status' : False ,'message' :'Error data '},status=status.HTTP_404_NOT_FOUND)
     def get(self, request, format=None):
@@ -181,7 +198,7 @@ class SendingEmail(generics.GenericAPIView):
     def post(self,request,format=None):
         serializer = self.get_serializer(data =request.data)
         if serializer.is_valid(raise_exception=True):
-            return Response({'status': True,'messege' : 'check your email'},status=status.HTTP_200_OK)
+            return Response({'status': True,'messege' : 'تم ارسال رابط الي البريد الخاص بك'},status=status.HTTP_200_OK)
         return Response({'status' : False,'messege': 'email'}, status=status.HTTP_401_UNAUTHORIZED)
 
     
