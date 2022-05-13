@@ -32,11 +32,11 @@ class RegisterView(generics.GenericAPIView):
         serializer.is_valid()
         
         if User.objects.filter(email=user0['email']).exists():
-            return Response({'status' : False,'message' : 'email is already exist', })
+            return Response({'status' : False,'message' : 'هذا البريد موجود بالفعل', })
 
         
         if User.objects.filter(phone=user0['phone']).exists():
-            return Response({'status' : False,'message' : 'phone is already exist', })
+            return Response({'status' : False,'message' : 'رقم الهاتف مسجل مسبقا', })
         serializer.save()
         user_data = serializer.data
         user = User.objects.get(email=user0['email'])
@@ -53,12 +53,12 @@ class RegisterView(generics.GenericAPIView):
 
         Util.send_email(data)
         return Response({'status':True ,
-        'message':'chech your email you have a verification email',
+        'message':'تم ارسال رابط الي البريد الخاص بك',
         'user_data':user_data}, status=status.HTTP_201_CREATED)
 
 
 class VerifyEmail(views.APIView):
-    authentication_classes={AllowAny,}
+    authentication_classes=()
     serializer_class = EmailVerificationSerializer
 
     token_param_config = openapi.Parameter(
