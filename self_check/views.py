@@ -64,7 +64,7 @@ class Calender(generics.GenericAPIView):
             is_check=False
             if i >=7 and i <= 10 :
                 is_check=True
-            b = {"id":checkdate.day,"title":checkdate.day,'is_check':is_check}
+            b = {"id":checkdate.day,"M":checkdate.month,"Y":checkdate.year,"title":checkdate,'is_check':is_check}
             checkList['dates'].append(b)
 
         return Response({'status':True,'period':date.day,'date':checkList},status=status.HTTP_200_OK)
@@ -81,7 +81,7 @@ class Calender(generics.GenericAPIView):
                 is_check=False
                 if i >=7 and i <= 10 :
                     is_check=True
-                b = {"id":checkdate.day,"title":checkdate.day,'is_check':is_check}
+                b = {"id":checkdate.day,"M":checkdate.month,"Y":checkdate.year,"title":checkdate,'is_check':is_check}
                 checkList['dates'].append(b)
             return Response({'status':True,'period':perioddate.day,'data':checkList},status=status.HTTP_200_OK)
         except:
