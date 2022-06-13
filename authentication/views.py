@@ -104,11 +104,27 @@ class LoginAPIView(generics.GenericAPIView):
             if not user.is_active:
                 return Response({'status':False,"messege":'الحساب متوقف من قبل الادمن',"user_data":{}}, status=status.HTTP_200_OK)
             if not user.is_verified:
-                return Response({'status':False,"messege":'الحساب غير مفعل',"user_data":{}}, status=status.HTTP_200_OK)
+                user=request.data
+                user0 = User.objects.get(email=user['email'])
+                token = RefreshToken.for_user(user0).access_token
+                # token = PasswordResetTokenGenerator().make_token(user)
+                current_site = get_current_site(request).domain
+                relativeLink = reverse('email-verify')
+                absurl = 'http://'+current_site+relativeLink+"?token="+str(token)
+                email_body = 'Hi '+user0.first_name + \
+                    ' Use the link below to verify your email \n' + absurl
+                print(str(token))
+                data = {'email_body': email_body, 'to_email': user0.email,
+                        'email_subject': 'Verify email'}
+
+                Util.send_email(data)
+                return Response({'status':False ,
+                'messege':' هذا الحساب غير مفعل راجع البريد الخاص بك'})
+                # return Response({'status':False,"messege":'الحساب غير مفعل',"user_data":{}}, status=status.HTTP_200_OK)
             if filtered_user_by_email.exists() and filtered_user_by_email[0].auth_provider != 'email':
                pass
             return Response({'status':True,"messege":"مرحباً..!","user_data":serializer.data}, status=status.HTTP_200_OK)
-        return Response({'status':False,"messege":'..!خطأ في البريد او الرقم السري',"user_data":{}}, status=status.HTTP_200_OK)
+        return Response({'status':False,"messege":'..!خطأ في البريد او الرقم السري',"user_data":{}}, status=status.HTTP_400_BAD_REQUEST)
 
         
 
